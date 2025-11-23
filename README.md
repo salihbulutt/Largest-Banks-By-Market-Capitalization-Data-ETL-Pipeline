@@ -4,7 +4,7 @@ A robust ETL (Extract, Transform, Load) pipeline that scrapes GDP data from Wiki
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
+- [Overview](#dart-overview)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
