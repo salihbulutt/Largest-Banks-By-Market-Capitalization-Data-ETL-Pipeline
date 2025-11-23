@@ -18,7 +18,7 @@ A robust ETL (Extract, Transform, Load) pipeline that scrapes GDP data from Wiki
 - [Contributing](#contributing)
 - [License](#license)
 
-## 🎯 Overview
+## 🎯Overview
 
 This project demonstrates a complete ETL pipeline that:
 - **Extracts** GDP data from Wikipedia's archived page
