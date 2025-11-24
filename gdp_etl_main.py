@@ -3,7 +3,7 @@ GDP Data ETL Pipeline
 ====================
 This script extracts GDP data from Wikipedia, transforms it, and loads it into CSV and SQLite database.
 
-Author: Your Name
+Author: Salih Bulut
 Date: 2025
 """
 
