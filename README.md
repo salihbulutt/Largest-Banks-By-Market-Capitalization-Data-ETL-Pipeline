@@ -8,20 +8,20 @@ A Python-based ETL (Extract, Transform, Load) pipeline that scrapes data about t
 - [Prerequisites](#package-prerequisites)
 - [Installation](#rocket-installation)
 - [Usage](#computer-usage)
+- [Data Source](#globe-with-meridians-data-source)
 - [Project Structure](#file_folder-project-structure)
 - [Pipeline Workflow](#arrows_counterclockwise-pipeline-workflow)
-- [Configuration](#gear-configuration)
 - [Output Files](#bar_chart-output-files)
 - [Query Examples](#mag-query-examples)
 - [Logging](#memo-logging)
 - [Contributing](#handshake-contributing)
-- [License](#page_facing_up-license)
+- [License](#page_facing_up-license) 
 
 ## :dart: Overview
 
 This project demonstrates a complete ETL pipeline that:
-- **Extracts** GDP data from Wikipedia's archived page
-- **Transforms** the data from millions to billions USD
+- **Extracts** bank data from a Wikipedia archive page
+- **Transforms** market capitalization from USD to GBP, EUR, and INR
 - **Loads** the processed data into CSV and SQLite database
 - **Logs** every step of the process with timestamps
 
@@ -29,35 +29,34 @@ This project demonstrates a complete ETL pipeline that:
 
 - ✅ Web scraping with Beautiful Soup
 - ✅ Data transformation and cleaning with Pandas
-- ✅ Dual output: CSV and SQLite database
-- ✅ Comprehensive logging system
+- ✅ Data storage in multiple formats (CSV + SQLite)
+- ✅ Automated logging with timestamps
 - ✅ SQL query execution capability
-- ✅ Error handling and data validation
+- ✅ Multi-currency conversion (USD → GBP, EUR, INR)
 
 ## :package: Prerequisites
 
 - Python 3.7 or higher
-- pip (Python package manager)
+- pip (Python package installer)
+- Internet connection (for web scraping)
 
 ## :rocket: Installation
 
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/gdp-etl-pipeline.git
-cd gdp-etl-pipeline
+git clone https://github.com/yourusername/largest-banks-etl.git
+cd largest-banks-etl
 ```
 
 ### Step 2: Create Virtual Environment (Recommended)
 
-**Windows:**
 ```bash
+# Windows
 python -m venv venv
 venv\Scripts\activate
-```
 
-**macOS/Linux:**
-```bash
+# macOS/Linux
 python3 -m venv venv
 source venv/bin/activate
 ```
@@ -68,19 +67,47 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## :computer: Usage
+### Step 4: Prepare Exchange Rate File
 
-### Basic Usage
+Create an `exchange_rate.csv` file in the project root directory with the following structure:
 
-Run the ETL pipeline:
-
-```bash
-python etl_pipeline.py
+```csv
+Currency,Rate
+GBP,0.8
+EUR,0.93
+INR,82.95
 ```
 
-### Advanced Usage
+**Note:** Update the rates according to current exchange rates if needed.
 
-You can modify the configuration in `config.py` or pass parameters directly in the script.
+## :computer: Usage
+
+### Running the ETL Pipeline
+
+Simply execute the main script:
+
+```bash
+python banks_project.py
+```
+### What Happens:
+
+1. Loads exchange rates from `exchange_rate.csv`
+2. Scrapes bank data from Wikipedia archive
+3. Transforms market cap values to multiple currencies
+4. Saves data to `Largest_banks_data.csv`
+5. Loads data into SQLite database `Banks.db`
+6. Executes sample queries
+7. Logs all steps to `code_log.txt`
+
+
+## :globe_with_meridians: Data Source
+
+The pipeline extracts data from:
+```
+https://web.archive.org/web/20230908091635/https://en.wikipedia.org/wiki/List_of_largest_banks
+```
+
+This is an archived snapshot ensuring data consistency and reliability.
 
 ## :file_folder: Project Structure
 
@@ -103,11 +130,11 @@ largest-banks-etl/
 ```
 1. Extract
    ↓
-   Scrape GDP data from Wikipedia Archive
+   Scrape data about the world's largest banks from Wikipedia Archive
    ↓
 2. Transform
    ↓
-   Convert millions → billions USD
+   Convert market cap values to multiple currencies
    Round to 2 decimal places
    ↓
 3. Load
@@ -122,66 +149,56 @@ largest-banks-etl/
 5. Log All Steps
 ```
 
-## :gear: Configuration
-
-Edit `config.py` to customize:
-
-```python
-# Data source
-URL = 'https://web.archive.org/web/...'
-
-# Output paths
-CSV_PATH = './data/Countries_by_GDP.csv'
-DB_NAME = './data/World_Economies.db'
-
-# Database settings
-TABLE_NAME = 'Countries_by_GDP'
-
-# Logging
-LOG_FILE = './logs/etl_project_log.txt'
-```
-
 ## :bar_chart: Output Files
 
-### CSV Output
-Located at: `data/Countries_by_GDP.csv`
+### CSV Output (`Largest_banks_data.csv`)
 
-| Country | GDP_USD_billions |
-|---------|------------------|
-| United States | 25462.70 |
-| China | 17963.17 |
-| ... | ... |
+| Name | MC_USD_Billion | MC_GBP_Billion | MC_EUR_Billion | MC_INR_Billion |
+|------|----------------|----------------|----------------|----------------|
+| JPMorgan Chase | 432.92 | 346.34 | 402.62 | 35910.71 |
+| ... | ... | ... | ... | ... |
 
-### SQLite Database
-Located at: `data/World_Economies.db`
+### SQLite Database (`Banks.db`)
 
-Table: `Countries_by_GDP`
-- Country (TEXT)
-- GDP_USD_billions (REAL)
+Table: `Largest_banks`
+- Contains the same columns as CSV
+- Supports SQL queries for data analysis
 
 ## :mag: Query Examples
 
-The pipeline includes a sample query. You can add more:
+The pipeline executes three sample queries:
 
-```python
-# Get countries with GDP >= 100 billion
-query = "SELECT * FROM Countries_by_GDP WHERE GDP_USD_billions >= 100"
+1. **All Records:**
+   ```sql
+   SELECT * FROM Largest_banks
+   ```
 
-# Get top 10 countries
-query = "SELECT * FROM Countries_by_GDP ORDER BY GDP_USD_billions DESC LIMIT 10"
+2. **Average Market Cap in GBP:**
+   ```sql
+   SELECT AVG(MC_GBP_Billion) FROM Largest_banks
+   ```
 
-# Get average GDP
-query = "SELECT AVG(GDP_USD_billions) as avg_gdp FROM Countries_by_GDP"
+3. **Top 5 Banks:**
+   ```sql
+   SELECT Name FROM Largest_banks LIMIT 5
+   ```
+### Running Custom Queries
+
+You can modify the script or use any SQLite client to query the database:
+
+```bash
+sqlite3 Banks.db
+sqlite> SELECT * FROM Largest_banks WHERE MC_USD_Billion > 300;
 ```
 
 ## :memo: Logging
 
-All operations are logged with timestamps in `logs/etl_project_log.txt`:
+All operations are logged to `code_log.txt` with timestamps:
 
 ```
-2025-Nov-22-14:30:15 : Preliminaries complete. Initiating ETL process
-2025-Nov-22-14:30:16 : Data extraction complete. Initiating Transformation process
-2025-Nov-22-14:30:16 : Data transformation complete. Initiating loading process
+2024-Nov-28-14:30:15 : Preliminaries complete. Initiating ETL process
+2024-Nov-28-14:30:16 : Exchange rates loaded
+2024-Nov-28-14:30:18 : Data extraction complete. Initiating Transformation process
 ...
 ```
 
@@ -209,6 +226,7 @@ Your Name
 
 - Data source: Wikipedia
 - Built with Python, BeautifulSoup, Pandas, and SQLite
+- Exchange rates are example values and should be updated for production use
 
 ## 📈 Future Enhancements
 
