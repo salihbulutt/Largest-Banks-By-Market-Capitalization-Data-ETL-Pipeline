@@ -49,3 +49,5 @@ code_log.txt
 
 # Environment variables
 .env
+# Generated dashboard
+dashboard.html
