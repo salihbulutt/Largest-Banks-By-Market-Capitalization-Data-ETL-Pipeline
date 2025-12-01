@@ -168,7 +168,7 @@ Table: `Largest_banks`
 
 ## :bar_chart: Interactive Dashboard
 
-View the live dashboard: **[Click Here](https://salihbulutt.github.io/largest-banks-etl/)**
+View the live dashboard: **[Click Here](https://salihbulutt.github.io/Largest-Banks-By-Market-Capitalization-Data-ETL-Pipeline/)**
 
 ### Generate Dashboard Locally
 ```bash
